@@ -162,7 +162,6 @@
             this.EncodedTextBox.Location = new System.Drawing.Point(211, 32);
             this.EncodedTextBox.Multiline = true;
             this.EncodedTextBox.Name = "EncodedTextBox";
-            this.EncodedTextBox.ReadOnly = true;
             this.EncodedTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.EncodedTextBox.Size = new System.Drawing.Size(100, 200);
             this.EncodedTextBox.TabIndex = 17;
