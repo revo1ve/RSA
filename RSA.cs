@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 
 namespace RSA
 {
     static class RSA
     {
-        static char[] characters = new char[] { '#', 'А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И',
-                                                'Й', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С',
-                                                'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Ь', 'Ы', 'Ъ',
-                                                'Э', 'Ю', 'Я', ' ', '1', '2', '3', '4', '5', '6', '7',
-                                                '8', '9', '0' };
+        private static readonly string engAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        private static readonly string ruAlphabet = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
+        private static readonly string symbols = "!@#$%^&*(){}:;<>?\\|/,. ";
+        private static readonly string numbers = "1234567890";
+
+        public static readonly char[] Characters = (engAlphabet + engAlphabet.ToLower()
+            + ruAlphabet + ruAlphabet.ToLower() + symbols + numbers + Environment.NewLine).ToCharArray();
 
         public static bool IsTheNumberSimple(long n)
         {
@@ -26,66 +29,58 @@ namespace RSA
             return true;
         }
 
-        public static List<string> RSA_Encode(string s, long e, long n)
+        public static List<string> Encode(string text, long e, long n)
         {
             List<string> result = new List<string>();
 
-            ByteNumber byteNumber;
+            BigInteger E;
 
-            for (int i = 0; i < s.Length; i++)
+            for (int i = 0; i < text.Length; i++)
             {
-                int index = Array.IndexOf(characters, s[i]);
+                int index = Array.IndexOf(Characters, text[i]);
 
-                byteNumber = new ByteNumber(index.ToString());
+                E = new BigInteger(index);
+                E = BigInteger.Pow(E, (int)e);
 
-                var exp = new ByteNumber(index.ToString());
+                BigInteger n_ = new BigInteger((int)n);
 
-                for (int j = 0; j < (int)e; j++)
-                    byteNumber *= exp;
+                E %= n_;
 
-                ByteNumber n_ = new ByteNumber(((int)n).ToString());
-
-                byteNumber %= n_;
-
-                result.Add(byteNumber.ToString());
+                result.Add(E.ToString());
             }
 
             return result;
         }
 
-        public static string RSA_Decode(List<string> input, long d, long n)
+        public static string Decode(List<string> encryptedText, long d, long n)
         {
             string result = "";
 
-            ByteNumber byteNumber;
+            BigInteger E;
 
-            foreach (string item in input)
+            foreach (string item in encryptedText)
             {
-                byteNumber = new ByteNumber(item);
+                E = new BigInteger(Convert.ToDouble(item));
+                E = BigInteger.Pow(E, (int)d);
 
-                var exp = new ByteNumber(item);
+                BigInteger n_ = new BigInteger((int)n);
 
-                for (int i = 0; i < (int)d; i++)
-                    byteNumber *= exp;
+                E %= n_;
 
-                ByteNumber n_ = new ByteNumber(((int)n).ToString());
+                int index = Convert.ToInt32(E.ToString());
 
-                byteNumber %= n_;
-
-                int index = Convert.ToInt32(byteNumber.ToString());
-
-                result += characters[index].ToString();
+                result += Characters[index].ToString();
             }
 
             return result;
         }
 
-        public static long Calculate_d(long m)
+        public static long Calculate_e(long fi)
         {
-            long d = m - 1;
+            long d = fi - 1;
 
-            for (long i = 2; i <= m; i++)
-                if ((m % i == 0) && (d % i == 0))
+            for (long i = 2; i <= fi; i++)
+                if (!IsTheNumberSimple(d) || ((fi % i == 0) && (d % i == 0)))
                 {
                     d--;
                     i = 1;
@@ -94,19 +89,19 @@ namespace RSA
             return d;
         }
 
-        public static long Calculate_e(long d, long m)
+        public static long Calculate_d(long e, long fi)
         {
-            long e = 10;
+            long d = 1;
 
             while (true)
             {
-                if ((e * d) % m == 1)
+                if ((d * e) % fi == 1)
                     break;
                 else
-                    e++;
+                    d++;
             }
 
-            return e;
+            return d;
         }
     }
 }

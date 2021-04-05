@@ -116,7 +116,7 @@ namespace RSA
                             }
                         }
 
-                        if (result[0] == 0)
+                        if (result[0] == 0 || i == 0)
                         {
                             result.Insert(0, 1);
                             lengthDif++;
@@ -223,23 +223,24 @@ namespace RSA
             return result;
         }
 
-        public static ByteNumber operator /(ByteNumber a, ByteNumber b)
+        public static ByteNumber operator /(ByteNumber dividend, ByteNumber divisor)
         {
-            if (b.Bytes[0] == 0)
+            if (divisor.Bytes[0] == 0)
                 throw new Exception("На ноль делить нельзя");
 
             var i = 0;
             var resultNumb = new List<byte>();
             var incompleteDivisible = new ByteNumber(new List<byte>(0), Sign.Positive);
+            var divisorModule = new ByteNumber(divisor.Bytes, Sign.Positive);
 
-            while (i != a.Bytes.Count)
+            while (i != dividend.Bytes.Count)
             {
-                for (; i < a.Bytes.Count; i++)
+                for (; i < dividend.Bytes.Count; i++)
                 {
-                    if (incompleteDivisible >= b)
+                    if (incompleteDivisible >= divisorModule)
                         break;
 
-                    incompleteDivisible.Bytes.Add(a.Bytes[i]);
+                    incompleteDivisible.Bytes.Add(dividend.Bytes[i]);
                 }
 
                 if (incompleteDivisible.Bytes.TrueForAll(x => x == 0))
@@ -251,17 +252,17 @@ namespace RSA
 
                 for (int j = 0; j < 10; j++)
                 {
-                    if (incompleteDivisible < b)
+                    if (incompleteDivisible < divisorModule)
                     {
                         resultNumb.Add((byte)j);
                         break;
                     }
 
-                    incompleteDivisible -= b;
+                    incompleteDivisible -= divisorModule;
                 }
             }
 
-            var resultSign = a.Sign == b.Sign ? Sign.Positive : Sign.Negative;
+            var resultSign = dividend.Sign == divisor.Sign ? Sign.Positive : Sign.Negative;
             return new ByteNumber(resultNumb, resultSign);
         }
 
