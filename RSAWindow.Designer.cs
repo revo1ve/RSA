@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RSAWindow));
             this.textBox_p = new System.Windows.Forms.TextBox();
             this.textBox_q = new System.Windows.Forms.TextBox();
             this.textBox_n = new System.Windows.Forms.TextBox();
@@ -211,9 +212,9 @@
             this.Controls.Add(this.textBox_q);
             this.Controls.Add(this.textBox_p);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "RSAWindow";
-            this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "RSAEncoder";
             this.ResumeLayout(false);
